@@ -1,47 +1,123 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Insertion Sort</title>
-    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    
+    <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Insertion Sort</h1>
-            <p>Aplicando o insertion sort</p>
+    <div class="container my-5 shadow-lg bg-white rounded-4 overflow-hidden p-0">
+        <!-- Titulo de inicio -->
+        <div class="bg-primary text-white text-center py-5">
+            <h1 class="display-4 fw-bold">Insertion Sort</h1>
+            <p class="lead text-white-50">Aplicando o insertion sort</p>
         </div>
 
-        <div class="menu-container">
-            <div class="menu">
-                <button class="menu-btn">
-                    Incio
-                </button>
-                <button class="menu-btn">
-                    Carregar Dados
-                </button>
-                <button class="menu-btn">
-                    Executar Ordenação
-                </button>
-
-                <button class="menu-btn">
-                    Dados Originais
-                </button>
-
-                <button class="menu-btn">
-                    Dados Ordenados
-                </button>
-
-                <button class="menu-btn">
-                    Estatiscas
-                </button>
+        <!-- Nav bar com controles de Aba -->
+        <nav class="bg-light border-bottom p-4">
+            <div class="row row-cols-3 g-3 justify-content-center" role="tablist">
+                <div class="col">
+                    <button class="btn btn-primary active w-100 h-100 py-3" data-bs-toggle="pill" data-bs-target="#inicio" type="button" role="tab">Inicio</button>
+                </div>
+                <div class="col">
+                    <button class="btn btn-primary w-100 h-100 py-3" data-bs-toggle="pill" data-bs-target="#carregar" type="button" role="tab">Carregar Dados</button>
+                </div>
+                <div class="col">
+                    <button class="btn btn-primary w-100 h-100 py-3" data-bs-toggle="pill" data-bs-target="#executar" type="button" id="tab-executar">Executar Ordenação</button>
+                </div>
+                <div class="col">
+                    <button class="btn btn-primary w-100 h-100 py-3" data-bs-toggle="pill" data-bs-target="#ordenados" type="button" role="tab">Dados Ordenados</button>
+                </div>
+                <div class="col">
+                    <button class="btn btn-primary w-100 h-100 py-3" data-bs-toggle="pill" data-bs-target="#originais" type="button" role="tab">Dados Originais</button>
+                </div>
+                <div class="col">
+                    <button class="btn btn-primary w-100 h-100 py-3" data-bs-toggle="pill" data-bs-target="#estatisticas" type="button" role="tab">Estatísticas</button>
+                </div>
             </div>
+        </nav>
+
+        <main class="p-4 p-md-5">
+            <!-- Container das Abas -->
+            <div class="tab-content">
+                
+                
+                <div class="tab-pane fade show active" id="inicio">
+                    <div class="mb-5 text-center">
+                        <h2 class="text-primary fw-bold mb-4">Bem vindo</h2>
+                        <div class="alert alert-info d-inline-block">
+                            <p class="mb-1"><strong>Como Começar:</strong></p>
+                            <p class="mb-1">Clique em "Carregar Arquivo" para importar uma lista de nomes</p>
+                            <p class="mb-1">Vá para "Executar Ordenação" para iniciar o algoritmo</p>
+                            <p class="mb-1">Compare os resultados em "Dados Originais" e "Dados Ordenados"</p>
+                            <p class="mb-0">Consulte "Estatísticas" para análises detalhadas de desempenho</p>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div class="tab-pane fade" id="carregar">
+                    <h2 class="text-primary fw-bold">Carregar Dados</h2>
+                    <p>Selecione um arquivo de texto (.txt) com a lista de nomes a serem ordenados. O arquivo deve conter um nome por linha.</p>
+
+                <div class="mb-4">
+                    <label for="fileInput" class="form-label fw-semibold">Escolha o arquivo:</label>
+                    <!-- O atributo 'accept' filtra para mostrar apenas .txt na seleção -->
+                    <input class="form-control" type="file" id="fileInput" accept=".txt">
+            </div>
+
+            <button class="btn btn-primary px-5 py-2 shadow-sm" id="btnCarregar">
+                Carregar para o Sistema
+            </button>
+
+                </div>
+
+               <div class="tab-pane fade" id="executar" role="tabpanel">
+    <h2 class="text-primary fw-bold mb-4">Executar Ordenação</h2>
+
+    <!-- CASO 1: Tem arquivo carregado -->
+    <div id="com-dados" class="d-none text-center">
+        <div class="alert alert-success py-4">
+            <p class="fs-5 mb-0">Agora que você enviou o arquivo .txt, pode executar a ordenação!</p>
         </div>
-
-
+        <button class="btn btn-success btn-lg px-5 shadow-sm mt-3" id="btnIniciarOrdenacao">
+            Iniciar Algoritmo
+        </button>
     </div>
 
+    <!-- CASO 2: Não tem arquivo carregado -->
+    <div id="sem-dados" class="text-center">
+        <div class="alert alert-warning py-4">
+            <p class="fs-5 mb-3">Primeiro você tem que carregar os dados!</p>
+            <button class="btn btn-outline-warning fw-bold" id="btnIrParaCarregar">
+                Ir para Carregar Dados
+            </button>
+        </div>
+    </div>
+</div>
+                
+                <div class="tab-pane fade" id="ordenados">
+                    <h2>Dados Ordenados</h2>
+                    <p>teste</p>
+                </div>
+
+                <div class="tab-pane fade" id="originais" >
+                    <h2>teste</h2>
+                </div>
+
+                <div class="tab-pane fade" id="estatisticas">
+                    
+                </div>
+            </div>
+        </main>
+    </div>
+
+    
+    <script src="../assets/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>

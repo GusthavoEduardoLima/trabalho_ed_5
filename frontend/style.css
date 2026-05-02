@@ -1,5 +1,37 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+
+
+:root {
+   
+    --cor-primaria-dark: #2c5aa0;
+    --cor-primaria-light: #4a90e2;
+    --cor-fundo-gradiente: linear-gradient(135deg, #2c5aa0 0%, #4a90e2 100%);
+    --cor-background-site: #f0f4f8;
+
+ 
+    --bs-primary: #2c5aa0; 
+    --bs-primary-rgb: 44, 90, 160;
+    --bs-info: #4a90e2;
+}
+
+
+body {
+    background: linear-gradient(135deg, #f0f4f8 0%, #e8eef7 100%) !important;
+    min-height: 100vh;
+}
+
+.header-gradiente {
+    background: var(--cor-fundo-gradiente) !important;
+}
+
+.btn-primary {
+    background-color: var(--cor-primaria-dark);
+    border-color: var(--cor-primaria-dark);
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: var(--cor-primaria-light);
+    border-color: var(--cor-primaria-light);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(44, 90, 160, 0.2);
 }
