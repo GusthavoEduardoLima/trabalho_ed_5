@@ -159,3 +159,51 @@ function atualizarInterfaceOrdenada() {
         if(badgeTotal) badgeTotal.innerText = `${nomesOrdenadosArray.length} nomes`;
     }
 }
+let nomesOriginaisArray = [];
+
+document.getElementById('btnCarregar').addEventListener('click', function() {
+    const fileInput = document.getElementById('fileInput');
+    
+    if (fileInput.files.length > 0) {
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            const conteudo = e.target.result;
+            // Divide o texto por quebras de linha e remove espaços extras
+            nomesOriginaisArray = conteudo.split(/\r?\n/).filter(nome => nome.trim() !== "");
+            
+            // Preenche a aba de dados originais imediatamente
+            exibirDadosOriginais();
+            
+            arquivoCarregado = true;
+            const triggerEl = document.getElementById('tab-executar');
+            new bootstrap.Tab(triggerEl).show();
+        };
+        
+        reader.readAsText(fileInput.files[0]);
+    } else {
+        alert("Selecione um arquivo .txt!");
+    }
+});
+
+function exibirDadosOriginais() {
+    const container = document.getElementById('container-lista-originais');
+    const msgVazia = document.getElementById('msg-originais-vazia');
+    const ul = document.getElementById('lista-nomes-originais');
+
+    if (nomesOriginaisArray.length > 0) {
+        msgVazia.classList.add('d-none');
+        container.classList.remove('d-none');
+
+        ul.innerHTML = "";
+        nomesOriginaisArray.forEach((nome, i) => {
+            const li = document.createElement('li');
+            li.className = "list-group-item d-flex justify-content-between align-items-center";
+            li.innerHTML = `
+                <span>${nome}</span>
+                <small class="text-muted">Posição ${i + 1}</small>
+            `;
+            ul.appendChild(li);
+        });
+    }
+}

@@ -179,9 +179,58 @@
     </div>
 </div>
 
-                <div class="tab-pane fade" id="originais" >
-                    <h2>teste</h2>
+                <div class="tab-pane fade" id="originais" role="tabpanel">
+    <div class="p-4">
+        <h2 class="text-primary fw-bold mb-4">Dados Originais</h2>
+
+        <div id="container-lista-originais" class="d-none">
+            <div class="row g-4">
+                <!-- Lado Esquerdo: Lista Original -->
+                <div class="col-md-8">
+                    <p class="text-muted mb-3">Lista conforme carregada no arquivo:</p>
+                    <div class="border rounded-3 bg-white shadow-sm" style="max-height: 300px; overflow-y: auto; overflow-x: hidden;">
+                        <ul class="list-group list-group-flush" id="lista-nomes-originais">
+                            <!-- JS insere aqui -->
+                        </ul>
+                    </div>
                 </div>
+
+                <!-- Lado Direito: Atalhos Estilizados -->
+                <div class="col-md-4">
+                    <p class="text-muted mb-3">Navegação:</p>
+                    
+                    <!-- Card Dados Ordenados -->
+                    <div class="card bg-primary text-white border-0 rounded-4 mb-3 shadow-sm btn-action" 
+                         role="button" onclick="document.querySelector('[data-bs-target=\'#ordenados\']').click()">
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold mb-1">Dados Ordenados</h5>
+                            <p class="small mb-0 text-white-50">Veja o resultado após o Insertion Sort.</p>
+                        </div>
+                    </div>
+
+                    <!-- Card Estatísticas -->
+                    <div class="card bg-primary text-white border-0 rounded-4 mb-3 shadow-sm btn-action" 
+                         role="button" onclick="document.querySelector('[data-bs-target=\'#estatisticas\']').click()">
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold mb-1">Estatísticas</h5>
+                            <p class="small mb-0 text-white-50">Analise as métricas do algoritmo.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alerta Caso não tenha carregado nada -->
+        <div id="msg-originais-vazia" class="text-center py-5">
+            <div class="alert alert-warning py-4 border-dashed">
+                <p class="fs-5 mb-0">Nenhum arquivo foi carregado ainda.</p>
+                <button class="btn btn-outline-warning fw-bold" id="btnIrParaCarregar">
+                Ir para Carregar Dados
+            </button>
+            </div>
+        </div>
+    </div>
+</div>
 
                 <div class="tab-pane fade" id="estatisticas">
                     
