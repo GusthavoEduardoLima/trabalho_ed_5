@@ -43,3 +43,22 @@ body {
 #loadingModal .progress-bar {
     background-color: var(--cor-primaria-dark) !important;
 }
+/* Efeito de hover nos cards de ação */
+.btn-action {
+    transition: transform 0.2s, filter 0.2s;
+    cursor: pointer;
+}
+
+.btn-action:hover {
+    transform: translateY(-3px); /* Levanta levemente o card */
+    filter: brightness(1.1);    /* Dá um brilho sutil */
+}
+
+.btn-action:active {
+    transform: translateY(0);    /* Volta ao normal ao clicar */
+}
+
+/* Garante que os cards tenham bordas bem arredondadas como na imagem */
+.rounded-4 {
+    border-radius: 1rem !important;
+}

@@ -79,3 +79,83 @@ document.getElementById('btnIniciarOrdenacao').addEventListener('click', functio
         }
     }, 200); // Velocidade do carregamento
 });
+let nomesOrdenadosArray = ["nome 1", "nome 2"]; // Seus exemplos iniciais
+
+// 1. Botão de Carregar
+document.getElementById('btnCarregar').addEventListener('click', function() {
+    const fileInput = document.getElementById('fileInput');
+    if (fileInput.files.length > 0) {
+        arquivoCarregado = true;
+        const triggerEl = document.getElementById('tab-executar');
+        new bootstrap.Tab(triggerEl).show();
+    } else {
+        alert("Selecione um arquivo .txt!");
+    }
+});
+
+// 2. Lógica de Iniciar Ordenação (Unificada)
+document.getElementById('btnIniciarOrdenacao').addEventListener('click', function() {
+    const loadingModalEl = document.getElementById('loadingModal');
+    const loadingModal = new bootstrap.Modal(loadingModalEl);
+    const barra = document.getElementById('loading-bar');
+    let progresso = 0;
+    
+    loadingModal.show();
+
+    const intervalo = setInterval(() => {
+        progresso += 10;
+        barra.style.width = progresso + "%";
+        barra.innerText = progresso + "%";
+
+        if (progresso >= 100) {
+            clearInterval(intervalo);
+            
+            setTimeout(() => {
+                loadingModal.hide();
+                
+                // --- A MÁGICA ACONTECE AQUI ---
+                // Definimos os nomes que queremos exibir
+                nomesOrdenadosArray = ["Neymar Jr","hjjhds","jdsjh","hjfhjsj", "Lionel Messi", "Cristiano Ronaldo", "Vini Jr","joao","carl","tete", "geuse"];
+                
+                // Chamamos a função para construir a lista no HTML
+                atualizarInterfaceOrdenada();
+                
+                // Mudamos para a aba de resultados
+                const abaOrdenados = document.querySelector('[data-bs-target="#ordenados"]');
+                new bootstrap.Tab(abaOrdenados).show();
+                
+                // Reset da barra
+                setTimeout(() => {
+                    barra.style.width = "0%";
+                    progresso = 0;
+                }, 500);
+            }, 600);
+        }
+    }, 100); 
+});
+
+// 3. Função de Renderização (A que você já tinha, mas agora sendo chamada)
+function atualizarInterfaceOrdenada() {
+    const containerLista = document.getElementById('container-lista-ordenada');
+    const msgVazia = document.getElementById('msg-sem-dados');
+    const listaUl = document.getElementById('lista-nomes-ordenados');
+    const badgeTotal = document.getElementById('total-nomes');
+
+    if (nomesOrdenadosArray.length > 0) {
+        msgVazia.classList.add('d-none');
+        containerLista.classList.remove('d-none');
+
+        listaUl.innerHTML = "";
+        nomesOrdenadosArray.forEach((nome, i) => {
+            const li = document.createElement('li');
+            li.className = "list-group-item d-flex justify-content-between align-items-center";
+            li.innerHTML = `
+                <span>${nome}</span>
+                <small class="text-primary fw-bold">#${i + 1}</small>
+            `;
+            listaUl.appendChild(li);
+        });
+
+        if(badgeTotal) badgeTotal.innerText = `${nomesOrdenadosArray.length} nomes`;
+    }
+}

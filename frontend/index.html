@@ -100,30 +100,82 @@
     </div>
 </div>
                 
-                <div class="tab-pane fade" id="ordenados" role="tabpanel">
-    <h2 class="text-primary fw-bold mb-4">Dados Ordenados</h2>
-    
-    <!-- Este container só aparece se houver dados ordenados -->
-    <div id="container-lista-ordenada" class="d-none">
-        <p class="text-muted">Abaixo está a lista de nomes processada pelo algoritmo:</p>
-        
-        <!-- List Group com Scroll -->
-        <div class="border rounded-3 bg-white shadow-sm" style="max-height: 400px; overflow-y: auto;">
-            <ul class="list-group list-group-flush" id="lista-nomes-ordenados">
-                <!-- Os itens (<li>) serão inseridos aqui pelo JavaScript -->
-            </ul>
+        <div class="tab-pane fade" id="ordenados" role="tabpanel">
+    <div class="p-4">
+        <h2 class="text-primary fw-bold mb-4">Dados Ordenados</h2>
+
+        <!-- ESTADO 1: Mensagem de erro/aviso (Visível por padrão) -->
+        <div id="msg-sem-dados" class="text-center py-5">
+            <div class="alert alert-warning border-dashed py-4">
+                
+                <p class="fs-5 mb-3">Ainda não há dados para exibir.</p>
+                <p class="text-muted small mb-4">Você precisa carregar um arquivo e executar o algoritmo primeiro.</p>
+                <button class="btn btn-outline-warning fw-bold" onclick="document.querySelector('[data-bs-target=\'#carregar\']').click()">
+                    Ir para Carregar Dados
+                </button>
+            </div>
+        </div>
+<!-- ESTADO 2: Lista de Nomes (Escondida por padrão com d-none) -->
+<div id="container-lista-ordenada" class="d-none">
+    <div class="row g-4">
+        <!-- Lado Esquerdo: A Lista (8 colunas no desktop) -->
+        <div class="col-md-8">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <p class="text-muted mb-0">Lista processada com sucesso:</p>
+                <span class="badge bg-success" id="total-nomes">0 nomes</span>
+            </div>
+
+            <!-- List Group com Scroll -->
+            <div class="border rounded-3 bg-white shadow-sm" style="max-height: 300px; overflow-y: auto; overflow-x: hidden;">
+                <ul class="list-group list-group-flush" id="lista-nomes-ordenados">
+                    <!-- Itens inseridos pelo JS -->
+                </ul>
+            </div>
         </div>
 
-        <div class="mt-4 text-center">
-            <button class="btn btn-outline-primary" id="btnExportar">Exportar Resultado (.txt)</button>
+        <!-- Lado Direito: Cards de Ação (4 colunas no desktop) -->
+       <!-- Lado Direito: Cards de Ação Estilizados -->
+<div class="col-md-4">
+    <p class="text-muted mb-3">Atalhos do Sistema:</p>
+
+    <!-- Card Baixar (Ação Principal) -->
+    <div class="card bg-success text-white border-0 rounded-4 mb-3 shadow-sm btn-action" 
+         role="button" id="btnBaixar">
+        <div class="card-body p-4">
+            <h5 class="fw-bold mb-1">Baixar Ordenados</h5>
+            <p class="small mb-0 text-white-50">Salve o resultado final em um arquivo .txt</p>
         </div>
     </div>
 
-    <!-- Mensagem caso não tenha nada ainda -->
-    <div id="msg-lista-vazia" class="text-center py-5">
-        <div class="alert alert-light border">
-            <p class="mb-0">A lista ainda não foi processada. Vá em <strong>Executar Ordenação</strong> primeiro.</p>
+    <!-- Card Dados Originais -->
+    <div class="card bg-primary text-white border-0 rounded-4 mb-3 shadow-sm btn-action" 
+         role="button" onclick="document.querySelector('[data-bs-target=\'#originais\']').click()">
+        <div class="card-body p-4">
+            <h5 class="fw-bold mb-1">Dados Originais</h5>
+            <p class="small mb-0 text-white-50">Visualize a lista completa antes da ordenação.</p>
         </div>
+    </div>
+
+    <!-- Card Estatísticas -->
+    <div class="card bg-primary text-white border-0 rounded-4 mb-3 shadow-sm btn-action" 
+         role="button" onclick="document.querySelector('[data-bs-target=\'#estatisticas\']').click()">
+        <div class="card-body p-4">
+            <h5 class="fw-bold mb-1">Estatísticas</h5>
+            <p class="small mb-0 text-white-50">Analise o desempenho do Insertion Sort.</p>
+        </div>
+    </div>
+
+    <!-- Card Carregar Dados -->
+    <div class="card bg-secondary text-white border-0 rounded-4 mb-3 shadow-sm btn-action" 
+         role="button" onclick="document.querySelector('[data-bs-target=\'#carregar\']').click()">
+        <div class="card-body p-4">
+            <h5 class="fw-bold mb-1">Carregar Dados</h5>
+            <p class="small mb-0 text-white-50">Importe novos arquivos para reiniciar.</p>
+        </div>
+    </div>
+</div>
+    </div>
+</div>
     </div>
 </div>
 
