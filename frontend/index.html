@@ -187,7 +187,11 @@
             <div class="row g-4">
                 <!-- Lado Esquerdo: Lista Original -->
                 <div class="col-md-8">
-                    <p class="text-muted mb-3">Lista conforme carregada no arquivo:</p>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <p class="text-muted mb-0">Lista conforme carregada no arquivo:</p>
+                        <!-- Badge adicionado para o total de nomes originais -->
+                        <span class="badge bg-success" id="total-nomes-originais">0 nomes</span>
+                    </div>
                     <div class="border rounded-3 bg-white shadow-sm" style="max-height: 300px; overflow-y: auto; overflow-x: hidden;">
                         <ul class="list-group list-group-flush" id="lista-nomes-originais">
                             <!-- JS insere aqui -->
@@ -216,6 +220,14 @@
                             <p class="small mb-0 text-white-50">Analise as métricas do algoritmo.</p>
                         </div>
                     </div>
+
+                        <div class="card bg-secondary text-white border-0 rounded-4 mb-3 shadow-sm btn-action" 
+                        role="button" onclick="document.querySelector('[data-bs-target=\'#carregar\']').click()">
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold mb-1">Carregar Dados</h5>
+                            <p class="small mb-0 text-white-50">Importe novos arquivos para reiniciar.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -224,17 +236,75 @@
         <div id="msg-originais-vazia" class="text-center py-5">
             <div class="alert alert-warning py-4 border-dashed">
                 <p class="fs-5 mb-0">Nenhum arquivo foi carregado ainda.</p>
-                <button class="btn btn-outline-warning fw-bold" id="btnIrParaCarregar">
-                Ir para Carregar Dados
-            </button>
+                                <button class="btn btn-outline-warning fw-bold" onclick="document.querySelector('[data-bs-target=\'#carregar\']').click()">
+                    Ir para Carregar Dados
+                </button>
             </div>
         </div>
     </div>
 </div>
 
-                <div class="tab-pane fade" id="estatisticas">
-                    
+                <div class="tab-pane fade" id="estatisticas" role="tabpanel">
+    <div class="p-4">
+        <h2 class="text-primary fw-bold mb-4">Dashboard de Desempenho</h2>
+
+        <div id="container-estatisticas" class="d-none">
+            <div class="row g-4">
+                <!-- Lado Esquerdo: Gráfico de Barras -->
+                <div class="col-md-7">
+                    <div class="card shadow-sm border-0 rounded-4 h-100">
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold text-muted mb-4">Análise Visual</h5>
+                            <canvas id="graficoStatus"></canvas>
+                        </div>
+                    </div>
                 </div>
+
+                <!-- Lado Direito: Cards de Dados (Estilo Imagem) -->
+                <div class="col-md-5">
+                    <!-- Total de Nomes -->
+                    <div class="card bg-primary text-white border-0 rounded-4 mb-3 shadow-sm py-3 text-center">
+                        <div class="card-body">
+                            <p class="small mb-1 text-white-50 fw-bold">Total de Nomes</p>
+                            <h2 class="fw-bold mb-0" id="stat-total">0</h2>
+                        </div>
+                    </div>
+
+                    <!-- Comparações -->
+                    <div class="card bg-primary text-white border-0 rounded-4 mb-3 shadow-sm py-3 text-center">
+                        <div class="card-body">
+                            <p class="small mb-1 text-white-50 fw-bold">Comparações</p>
+                            <h2 class="fw-bold mb-0" id="stat-comparacoes">0</h2>
+                        </div>
+                    </div>
+
+                    <!-- Trocas -->
+                    <div class="card bg-primary text-white border-0 rounded-4 mb-3 shadow-sm py-3 text-center">
+                        <div class="card-body">
+                            <p class="small mb-1 text-white-50 fw-bold">Trocas</p>
+                            <h2 class="fw-bold mb-0" id="stat-trocas">0</h2>
+                        </div>
+                    </div>
+
+                    <!-- Tempo -->
+                    <div class="card bg-primary text-white border-0 rounded-4 mb-3 shadow-sm py-3 text-center">
+                        <div class="card-body">
+                            <p class="small mb-1 text-white-50 fw-bold">Tempo (ms)</p>
+                            <h2 class="fw-bold mb-0" id="stat-tempo">0,00</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alerta de Vazio -->
+        <div id="msg-stats-vazia" class="text-center py-5">
+            <div class="alert alert-warning py-4 border-dashed">
+                <p class="fs-5 mb-0">Execute a ordenação para gerar as estatísticas.</p>
+            </div>
+        </div>
+    </div>
+</div>
             </div>
         </main>
     </div>
@@ -257,6 +327,7 @@
     </div>
 </div>
     <script src="../assets/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/chart.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

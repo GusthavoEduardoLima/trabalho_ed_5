@@ -119,7 +119,7 @@ document.getElementById('btnIniciarOrdenacao').addEventListener('click', functio
                 
                 // Chamamos a função para construir a lista no HTML
                 atualizarInterfaceOrdenada();
-                
+                atualizarDashboard(20000, 199990000, 150000000,142005000.00);
                 // Mudamos para a aba de resultados
                 const abaOrdenados = document.querySelector('[data-bs-target="#ordenados"]');
                 new bootstrap.Tab(abaOrdenados).show();
@@ -190,6 +190,7 @@ function exibirDadosOriginais() {
     const container = document.getElementById('container-lista-originais');
     const msgVazia = document.getElementById('msg-originais-vazia');
     const ul = document.getElementById('lista-nomes-originais');
+    const badgeTotal = document.getElementById('total-nomes-originais'); // Referência ao novo badge
 
     if (nomesOriginaisArray.length > 0) {
         msgVazia.classList.add('d-none');
@@ -205,5 +206,53 @@ function exibirDadosOriginais() {
             `;
             ul.appendChild(li);
         });
+
+        // Atualiza o texto do badge com a contagem real
+        if (badgeTotal) badgeTotal.innerText = `${nomesOriginaisArray.length} nomes`;
     }
 }
+let meuGrafico = null; // Variável global para o gráfico
+
+function atualizarDashboard(total, comparacoes, trocas, tempo) {
+    // 1. Mostrar container e esconder mensagem
+    document.getElementById('container-estatisticas').classList.remove('d-none');
+    document.getElementById('msg-stats-vazia').classList.add('d-none');
+
+    // 2. Atualizar os Cards (Formatação brasileira)
+    document.getElementById('stat-total').innerText = total.toLocaleString('pt-BR');
+    document.getElementById('stat-comparacoes').innerText = comparacoes.toLocaleString('pt-BR');
+    document.getElementById('stat-trocas').innerText = trocas.toLocaleString('pt-BR');
+    document.getElementById('stat-tempo').innerText = tempo.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+
+    // 3. Gerar ou Atualizar o Gráfico
+    const ctx = document.getElementById('graficoStatus').getContext('2d');
+    
+    if (meuGrafico) {
+        meuGrafico.destroy(); // Destrói o gráfico anterior para criar um novo
+    }
+
+    meuGrafico = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Comparações', 'Trocas', 'Tempo(ns)'],
+            datasets: [{
+                label: 'Métricas do Algoritmo',
+                data: [comparacoes, trocas,tempo],
+                backgroundColor: ['#0d6efd', '#198754', '#ffc107'],
+                borderRadius: 10
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+}
+
+// INTEGRAÇÃO: Chame isso no final da sua barra de carregamento
+// Exemplo: atualizarDashboard(20000, 199990000, 150000000, 14200.50);
