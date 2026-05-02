@@ -38,3 +38,44 @@ document.getElementById('btnIrParaCarregar').addEventListener('click', function(
     const tabInstance = new bootstrap.Tab(btnCarregarTab);
     tabInstance.show();
 });
+document.getElementById('btnIniciarOrdenacao').addEventListener('click', function() {
+    // 1. Inicializa o Modal do Bootstrap
+    const loadingModalEl = document.getElementById('loadingModal');
+    const loadingModal = new bootstrap.Modal(loadingModalEl);
+    const barra = document.getElementById('loading-bar');
+    
+    let progresso = 0;
+    
+    // 2. Mostra o modal (isso já deixa o fundo cinza e trava a tela)
+    loadingModal.show();
+
+    // 3. Simula o carregamento
+    const intervalo = setInterval(() => {
+        progresso += 10; // Sobe de 10 em 10%
+        barra.style.width = progresso + "%";
+        barra.innerText = progresso + "%";
+
+        if (progresso >= 100) {
+            clearInterval(intervalo);
+            
+            // Pequena pausa para o usuário ver o 100%
+            setTimeout(() => {
+                // 4. Esconde o modal
+                loadingModal.hide();
+                
+                // 5. Muda automaticamente para a aba de Dados Ordenados
+                // Verifique se o seu botão da nav-bar tem o atributo data-bs-target="#ordenados"
+                const abaOrdenados = document.querySelector('[data-bs-target="#ordenados"]');
+                const tabInstance = new bootstrap.Tab(abaOrdenados);
+                tabInstance.show();
+                
+                // Reseta a barra para uma próxima execução
+                setTimeout(() => {
+                    barra.style.width = "0%";
+                    progresso = 0;
+                }, 500);
+                
+            }, 600);
+        }
+    }, 200); // Velocidade do carregamento
+});

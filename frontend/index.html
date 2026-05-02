@@ -100,10 +100,32 @@
     </div>
 </div>
                 
-                <div class="tab-pane fade" id="ordenados">
-                    <h2>Dados Ordenados</h2>
-                    <p>teste</p>
-                </div>
+                <div class="tab-pane fade" id="ordenados" role="tabpanel">
+    <h2 class="text-primary fw-bold mb-4">Dados Ordenados</h2>
+    
+    <!-- Este container só aparece se houver dados ordenados -->
+    <div id="container-lista-ordenada" class="d-none">
+        <p class="text-muted">Abaixo está a lista de nomes processada pelo algoritmo:</p>
+        
+        <!-- List Group com Scroll -->
+        <div class="border rounded-3 bg-white shadow-sm" style="max-height: 400px; overflow-y: auto;">
+            <ul class="list-group list-group-flush" id="lista-nomes-ordenados">
+                <!-- Os itens (<li>) serão inseridos aqui pelo JavaScript -->
+            </ul>
+        </div>
+
+        <div class="mt-4 text-center">
+            <button class="btn btn-outline-primary" id="btnExportar">Exportar Resultado (.txt)</button>
+        </div>
+    </div>
+
+    <!-- Mensagem caso não tenha nada ainda -->
+    <div id="msg-lista-vazia" class="text-center py-5">
+        <div class="alert alert-light border">
+            <p class="mb-0">A lista ainda não foi processada. Vá em <strong>Executar Ordenação</strong> primeiro.</p>
+        </div>
+    </div>
+</div>
 
                 <div class="tab-pane fade" id="originais" >
                     <h2>teste</h2>
@@ -117,6 +139,22 @@
     </div>
 
     
+
+    <!-- Modal de Carregamento -->
+<div class="modal fade" id="loadingModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0">
+            <div class="modal-body text-center p-5">
+                <h5 class="text-primary fw-bold mb-3">Ordenando nomes...</h5>
+                <div class="progress" style="height: 25px;">
+                    <div id="loading-bar" class="progress-bar progress-bar-striped progress-bar-animated" 
+                         role="progressbar" style="width: 0%;"></div>
+                </div>
+                <p class="text-muted mt-3 mb-0 small">Aguarde, estamos processando o algoritmo.</p>
+            </div>
+        </div>
+    </div>
+</div>
     <script src="../assets/js/bootstrap.bundle.min.js"></script>
     <script src="script.js"></script>
 </body>
