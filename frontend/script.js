@@ -1,23 +1,34 @@
 
 let arquivoCarregado = false;
+let nomesOriginaisArray = [];
+let nomesOrdenadosArray = [];
+let meuGrafico = null;
 
-document.getElementById('btnCarregar').addEventListener('click', function() {
+document.getElementById('btnCarregar').addEventListener('click', function () {
     const fileInput = document.getElementById('fileInput');
-    
-    if (fileInput.files.length > 0) {
-        
-        arquivoCarregado = true;
 
-        // Muda para a aba de execução
-        const triggerEl = document.getElementById('tab-executar');
-        const tabInstance = new bootstrap.Tab(triggerEl);
-        tabInstance.show();
-    } else {
+    if (fileInput.files.length === 0) {
         alert("Selecione um arquivo .txt!");
+        return;
     }
+
+    const reader = new FileReader();
+
+    reader.onload = function (e) {
+        const conteudo = e.target.result;
+        nomesOriginaisArray = conteudo
+            .split(/\r?\n/)
+            .filter(nome => nome.trim() !== "");
+
+        exibirDadosOriginais();
+
+        arquivoCarregado = true;
+        new bootstrap.Tab(document.getElementById('tab-executar')).show();
+    };
+
+    reader.readAsText(fileInput.files[0]);
 });
 
-// 2. Lógica para verificar o estado SEMPRE que a aba de execução abrir
 document.getElementById('tab-executar').addEventListener('shown.bs.tab', function () {
     const divComDados = document.getElementById('com-dados');
     const divSemDados = document.getElementById('sem-dados');
@@ -31,110 +42,106 @@ document.getElementById('tab-executar').addEventListener('shown.bs.tab', functio
     }
 });
 
-// 3. Botão de redirecionamento (caso ele entre na aba sem dados)
-document.getElementById('btnIrParaCarregar').addEventListener('click', function() {
-    // Procura o botão da aba de carregar (ajuste o seletor se o ID for diferente)
+document.getElementById('btnIrParaCarregar').addEventListener('click', function () {
     const btnCarregarTab = document.querySelector('[data-bs-target="#carregar"]');
-    const tabInstance = new bootstrap.Tab(btnCarregarTab);
-    tabInstance.show();
+    new bootstrap.Tab(btnCarregarTab).show();
 });
-document.getElementById('btnIniciarOrdenacao').addEventListener('click', function() {
-    // 1. Inicializa o Modal do Bootstrap
+
+
+document.getElementById('btnIniciarOrdenacao').addEventListener('click', async function () {
+    // Guarda de segurança: impede envio de array vazio
+    if (nomesOriginaisArray.length === 0) {
+        alert("Nenhum dado carregado. Volte e carregue um arquivo .txt.");
+        return;
+    }
+
     const loadingModalEl = document.getElementById('loadingModal');
     const loadingModal = new bootstrap.Modal(loadingModalEl);
     const barra = document.getElementById('loading-bar');
-    
-    let progresso = 0;
-    
-    // 2. Mostra o modal (isso já deixa o fundo cinza e trava a tela)
+
+    barra.style.width = "0%";
+    barra.innerText = "0%";
     loadingModal.show();
 
-    // 3. Simula o carregamento
-    const intervalo = setInterval(() => {
-        progresso += 10; // Sobe de 10 em 10%
-        barra.style.width = progresso + "%";
-        barra.innerText = progresso + "%";
-
-        if (progresso >= 100) {
-            clearInterval(intervalo);
-            
-            // Pequena pausa para o usuário ver o 100%
-            setTimeout(() => {
-                // 4. Esconde o modal
-                loadingModal.hide();
-                
-                // 5. Muda automaticamente para a aba de Dados Ordenados
-                // Verifique se o seu botão da nav-bar tem o atributo data-bs-target="#ordenados"
-                const abaOrdenados = document.querySelector('[data-bs-target="#ordenados"]');
-                const tabInstance = new bootstrap.Tab(abaOrdenados);
-                tabInstance.show();
-                
-                // Reseta a barra para uma próxima execução
-                setTimeout(() => {
-                    barra.style.width = "0%";
-                    progresso = 0;
-                }, 500);
-                
-            }, 600);
+    let progressoSimulado = 0;
+    const timerBarra = setInterval(() => {
+        if (progressoSimulado < 90) {
+            progressoSimulado += 5;
+            barra.style.width = progressoSimulado + "%";
+            barra.innerText = progressoSimulado + "%";
         }
-    }, 200); // Velocidade do carregamento
-});
-let nomesOrdenadosArray = ["nome 1", "nome 2"]; // Seus exemplos iniciais
+    }, 300);
 
-// 1. Botão de Carregar
-document.getElementById('btnCarregar').addEventListener('click', function() {
-    const fileInput = document.getElementById('fileInput');
-    if (fileInput.files.length > 0) {
-        arquivoCarregado = true;
-        const triggerEl = document.getElementById('tab-executar');
-        new bootstrap.Tab(triggerEl).show();
-    } else {
-        alert("Selecione um arquivo .txt!");
+    try {
+        const response = await fetch('http://localhost:5000/ordenar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nomes: nomesOriginaisArray })
+        });
+
+        if (!response.ok) {
+            const errTexto = await response.text();
+            throw new Error(`Servidor retornou erro ${response.status}: ${errTexto}`);
+        }
+
+        const dados = await response.json();
+
+        clearInterval(timerBarra);
+        barra.style.width = "100%";
+        barra.innerText = "100% - Concluído!";
+
+        setTimeout(() => {
+            loadingModal.hide();
+            nomesOrdenadosArray = dados.nomes_ordenados;
+            atualizarInterfaceOrdenada();
+            atualizarDashboard(
+                dados.total_nomes,
+                dados.comparacoes,
+                dados.trocas,
+                dados.tempo_ns
+            );
+
+            const abaOrdenados = document.querySelector('[data-bs-target="#ordenados"]');
+            if (abaOrdenados) new bootstrap.Tab(abaOrdenados).show();
+        }, 600);
+
+    } catch (erro) {
+        clearInterval(timerBarra);
+        loadingModal.hide();
+        // Mensagem de erro detalhada no console para facilitar depuração
+        console.error("Erro na ordenação:", erro);
+        alert(`Erro ao conectar com o servidor.\n\nDetalhe: ${erro.message}\n\nVerifique se o Python está rodando na porta 5000.`);
     }
 });
 
-// 2. Lógica de Iniciar Ordenação (Unificada)
-document.getElementById('btnIniciarOrdenacao').addEventListener('click', function() {
-    const loadingModalEl = document.getElementById('loadingModal');
-    const loadingModal = new bootstrap.Modal(loadingModalEl);
-    const barra = document.getElementById('loading-bar');
-    let progresso = 0;
-    
-    loadingModal.show();
 
-    const intervalo = setInterval(() => {
-        progresso += 10;
-        barra.style.width = progresso + "%";
-        barra.innerText = progresso + "%";
-
-        if (progresso >= 100) {
-            clearInterval(intervalo);
-            
-            setTimeout(() => {
-                loadingModal.hide();
-                
-                // --- A MÁGICA ACONTECE AQUI ---
-                // Definimos os nomes que queremos exibir
-                nomesOrdenadosArray = ["Neymar Jr","hjjhds","jdsjh","hjfhjsj", "Lionel Messi", "Cristiano Ronaldo", "Vini Jr","joao","carl","tete", "geuse"];
-                
-                // Chamamos a função para construir a lista no HTML
-                atualizarInterfaceOrdenada();
-                atualizarDashboard(20000, 199990000, 150000000,142005000.00);
-                // Mudamos para a aba de resultados
-                const abaOrdenados = document.querySelector('[data-bs-target="#ordenados"]');
-                new bootstrap.Tab(abaOrdenados).show();
-                
-                // Reset da barra
-                setTimeout(() => {
-                    barra.style.width = "0%";
-                    progresso = 0;
-                }, 500);
-            }, 600);
-        }
-    }, 100); 
+document.getElementById('btnBaixar').addEventListener('click', function () {
+    window.location.href = 'http://localhost:5000/baixar';
 });
 
-// 3. Função de Renderização (A que você já tinha, mas agora sendo chamada)
+
+function exibirDadosOriginais() {
+    const container = document.getElementById('container-lista-originais');
+    const msgVazia = document.getElementById('msg-originais-vazia');
+    const ul = document.getElementById('lista-nomes-originais');
+    const badgeTotal = document.getElementById('total-nomes-originais');
+
+    if (nomesOriginaisArray.length > 0) {
+        msgVazia.classList.add('d-none');
+        container.classList.remove('d-none');
+        ul.innerHTML = "";
+
+        nomesOriginaisArray.forEach((nome, i) => {
+            const li = document.createElement('li');
+            li.className = "list-group-item d-flex justify-content-between align-items-center";
+            li.innerHTML = `<span>${nome}</span><small class="text-muted">Posição ${i + 1}</small>`;
+            ul.appendChild(li);
+        });
+
+        if (badgeTotal) badgeTotal.innerText = `${nomesOriginaisArray.length} nomes`;
+    }
+}
+
 function atualizarInterfaceOrdenada() {
     const containerLista = document.getElementById('container-lista-ordenada');
     const msgVazia = document.getElementById('msg-sem-dados');
@@ -144,100 +151,37 @@ function atualizarInterfaceOrdenada() {
     if (nomesOrdenadosArray.length > 0) {
         msgVazia.classList.add('d-none');
         containerLista.classList.remove('d-none');
-
         listaUl.innerHTML = "";
+
         nomesOrdenadosArray.forEach((nome, i) => {
             const li = document.createElement('li');
             li.className = "list-group-item d-flex justify-content-between align-items-center";
-            li.innerHTML = `
-                <span>${nome}</span>
-                <small class="text-primary fw-bold">#${i + 1}</small>
-            `;
+            li.innerHTML = `<span>${nome}</span><small class="text-primary fw-bold">#${i + 1}</small>`;
             listaUl.appendChild(li);
         });
 
-        if(badgeTotal) badgeTotal.innerText = `${nomesOrdenadosArray.length} nomes`;
+        if (badgeTotal) badgeTotal.innerText = `${nomesOrdenadosArray.length} nomes`;
     }
 }
-let nomesOriginaisArray = [];
-
-document.getElementById('btnCarregar').addEventListener('click', function() {
-    const fileInput = document.getElementById('fileInput');
-    
-    if (fileInput.files.length > 0) {
-        const reader = new FileReader();
-        
-        reader.onload = function(e) {
-            const conteudo = e.target.result;
-            // Divide o texto por quebras de linha e remove espaços extras
-            nomesOriginaisArray = conteudo.split(/\r?\n/).filter(nome => nome.trim() !== "");
-            
-            // Preenche a aba de dados originais imediatamente
-            exibirDadosOriginais();
-            
-            arquivoCarregado = true;
-            const triggerEl = document.getElementById('tab-executar');
-            new bootstrap.Tab(triggerEl).show();
-        };
-        
-        reader.readAsText(fileInput.files[0]);
-    } else {
-        alert("Selecione um arquivo .txt!");
-    }
-});
-
-function exibirDadosOriginais() {
-    const container = document.getElementById('container-lista-originais');
-    const msgVazia = document.getElementById('msg-originais-vazia');
-    const ul = document.getElementById('lista-nomes-originais');
-    const badgeTotal = document.getElementById('total-nomes-originais'); // Referência ao novo badge
-
-    if (nomesOriginaisArray.length > 0) {
-        msgVazia.classList.add('d-none');
-        container.classList.remove('d-none');
-
-        ul.innerHTML = "";
-        nomesOriginaisArray.forEach((nome, i) => {
-            const li = document.createElement('li');
-            li.className = "list-group-item d-flex justify-content-between align-items-center";
-            li.innerHTML = `
-                <span>${nome}</span>
-                <small class="text-muted">Posição ${i + 1}</small>
-            `;
-            ul.appendChild(li);
-        });
-
-        // Atualiza o texto do badge com a contagem real
-        if (badgeTotal) badgeTotal.innerText = `${nomesOriginaisArray.length} nomes`;
-    }
-}
-let meuGrafico = null; // Variável global para o gráfico
-
 function atualizarDashboard(total, comparacoes, trocas, tempo) {
-    // 1. Mostrar container e esconder mensagem
     document.getElementById('container-estatisticas').classList.remove('d-none');
     document.getElementById('msg-stats-vazia').classList.add('d-none');
 
-    // 2. Atualizar os Cards (Formatação brasileira)
     document.getElementById('stat-total').innerText = total.toLocaleString('pt-BR');
     document.getElementById('stat-comparacoes').innerText = comparacoes.toLocaleString('pt-BR');
     document.getElementById('stat-trocas').innerText = trocas.toLocaleString('pt-BR');
     document.getElementById('stat-tempo').innerText = tempo.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
 
-    // 3. Gerar ou Atualizar o Gráfico
     const ctx = document.getElementById('graficoStatus').getContext('2d');
-    
-    if (meuGrafico) {
-        meuGrafico.destroy(); // Destrói o gráfico anterior para criar um novo
-    }
+    if (meuGrafico) meuGrafico.destroy();
 
     meuGrafico = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: ['Comparações', 'Trocas', 'Tempo(ns)'],
+            labels: ['Comparações', 'Trocas', 'Tempo (ns)'],
             datasets: [{
                 label: 'Métricas do Algoritmo',
-                data: [comparacoes, trocas,tempo],
+                data: [comparacoes, trocas, tempo],
                 backgroundColor: ['#0d6efd', '#198754', '#ffc107'],
                 borderRadius: 10
             }]
@@ -245,14 +189,34 @@ function atualizarDashboard(total, comparacoes, trocas, tempo) {
         options: {
             responsive: true,
             plugins: {
-                legend: { display: false }
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        // Mostra o valor real formatado no tooltip, não o logarítmico
+                        label: function(context) {
+                            const valor = context.raw;
+                            const unidades = ['comparações', 'trocas', 'ns'];
+                            const unidade = unidades[context.dataIndex];
+                            return ` ${valor.toLocaleString('pt-BR')} ${unidade}`;
+                        }
+                    }
+                }
             },
             scales: {
-                y: { beginAtZero: true }
+                y: {
+                    type: 'logarithmic',  // <-- resolve o problema de escala
+                    ticks: {
+                        callback: function(valor) {
+                            // Mostra apenas potências "limpas" no eixo: 1k, 10k, 100k...
+                            return valor.toLocaleString('pt-BR');
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Escala logarítmica'
+                    }
+                }
             }
         }
     });
 }
-
-// INTEGRAÇÃO: Chame isso no final da sua barra de carregamento
-// Exemplo: atualizarDashboard(20000, 199990000, 150000000, 14200.50);
