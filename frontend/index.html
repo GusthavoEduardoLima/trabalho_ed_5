@@ -251,14 +251,26 @@
         <div id="container-estatisticas" class="d-none">
             <div class="row g-4">
                 <!-- Lado Esquerdo: Gráfico de Barras -->
-                <div class="col-md-7">
-                    <div class="card shadow-sm border-0 rounded-4 h-100">
-                        <div class="card-body p-4">
-                            <h5 class="fw-bold text-muted mb-4">Análise Visual</h5>
-                            <canvas id="graficoStatus"></canvas>
-                        </div>
-                    </div>
-                </div>
+             <!-- Lado Esquerdo: Gráficos -->
+<div class="col-md-7">
+
+    <!-- Gráfico 1: Comparações e Trocas -->
+    <div class="card shadow-sm border-0 rounded-4 mb-4">
+        <div class="card-body p-4">
+            <h5 class="fw-bold text-muted mb-3">Comparações e Trocas</h5>
+            <canvas id="graficoComparacoes"></canvas>
+        </div>
+    </div>
+
+    <!-- Gráfico 2: Tempo -->
+    <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body p-4">
+            <h5 class="fw-bold text-muted mb-3">Tempo de Execução (ns)</h5>
+            <canvas id="graficoTempo"></canvas>
+        </div>
+    </div>
+
+</div>
 
                 <!-- Lado Direito: Cards de Dados (Estilo Imagem) -->
                 <div class="col-md-5">

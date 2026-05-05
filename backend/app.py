@@ -46,7 +46,8 @@ class Cliente:
             atual.next = novo
 
     def insertion_sort(self):
-        if self.head is None or self.head.next is None: return
+        if self.head is None or self.head.next is None:
+            return
         ordenada = None
         atual = self.head
         self.comparacoes = 0
@@ -54,23 +55,32 @@ class Cliente:
 
         while atual is not None:
             proximo = atual.next
-            if ordenada is None or atual.dado < ordenada.dado:
-                self.comparacoes += 1
-                atual.next = ordenada
+
+            if ordenada is None:
+                atual.next = None
                 ordenada = atual
                 self.trocas += 1
             else:
-                busca = ordenada
-                while busca.next is not None and busca.next.dado < atual.dado:
-                    self.comparacoes += 1
-                    busca = busca.next
-                atual.next = busca.next
-                busca.next = atual
-                self.trocas += 1
-            atual = proximo
-        self.head = ordenada
+                self.comparacoes += 1  # compara com a cabeça
+                if atual.dado < ordenada.dado:
+                    atual.next = ordenada
+                    ordenada = atual
+                    self.trocas += 1
+                else:
+                    busca = ordenada
+                    passos = 0
+                    while busca.next is not None:
+                        self.comparacoes += 1  # conta ANTES de decidir
+                        if busca.next.dado >= atual.dado:
+                            break       # saiu, mas a comparação já foi contada
+                        busca = busca.next
+                        passos += 1
+                    atual.next = busca.next
+                    busca.next = atual
+                    self.trocas += passos + 1
 
-    
+            atual = proximo
+            self.head = ordenada   
     def para_lista_python(self):
         """
         Converte lista encadeada para lista Python apenas para retornar no JSON

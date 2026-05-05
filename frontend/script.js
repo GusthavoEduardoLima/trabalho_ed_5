@@ -163,6 +163,9 @@ function atualizarInterfaceOrdenada() {
         if (badgeTotal) badgeTotal.innerText = `${nomesOrdenadosArray.length} nomes`;
     }
 }
+let graficoComparacoes = null;
+let graficoTempo = null;
+
 function atualizarDashboard(total, comparacoes, trocas, tempo) {
     document.getElementById('container-estatisticas').classList.remove('d-none');
     document.getElementById('msg-stats-vazia').classList.add('d-none');
@@ -172,18 +175,19 @@ function atualizarDashboard(total, comparacoes, trocas, tempo) {
     document.getElementById('stat-trocas').innerText = trocas.toLocaleString('pt-BR');
     document.getElementById('stat-tempo').innerText = tempo.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
 
-    const ctx = document.getElementById('graficoStatus').getContext('2d');
-    if (meuGrafico) meuGrafico.destroy();
+    if (graficoComparacoes) graficoComparacoes.destroy();
+    if (graficoTempo) graficoTempo.destroy();
 
-    meuGrafico = new Chart(ctx, {
+    // --- Gráfico 1: Comparações e Trocas ---
+    const ctx1 = document.getElementById('graficoComparacoes').getContext('2d');
+    graficoComparacoes = new Chart(ctx1, {
         type: 'bar',
         data: {
-            labels: ['Comparações', 'Trocas', 'Tempo (ns)'],
+            labels: ['Comparações', 'Trocas'],
             datasets: [{
-                label: 'Métricas do Algoritmo',
-                data: [comparacoes, trocas, tempo],
-                backgroundColor: ['#0d6efd', '#198754', '#ffc107'],
-                borderRadius: 10
+                data: [comparacoes, trocas],
+                backgroundColor: ['#0d6efd', '#198754'],
+                borderRadius: 8
             }]
         },
         options: {
@@ -192,28 +196,59 @@ function atualizarDashboard(total, comparacoes, trocas, tempo) {
                 legend: { display: false },
                 tooltip: {
                     callbacks: {
-                        // Mostra o valor real formatado no tooltip, não o logarítmico
-                        label: function(context) {
-                            const valor = context.raw;
-                            const unidades = ['comparações', 'trocas', 'ns'];
-                            const unidade = unidades[context.dataIndex];
-                            return ` ${valor.toLocaleString('pt-BR')} ${unidade}`;
+                        label: function (context) {
+                            const unidades = ['comparações', 'trocas'];
+                            return ` ${context.raw.toLocaleString('pt-BR')} ${unidades[context.dataIndex]}`;
                         }
                     }
                 }
             },
             scales: {
                 y: {
-                    type: 'logarithmic',  // <-- resolve o problema de escala
+                    type: 'logarithmic',
+                    title: { display: true, text: 'Escala logarítmica' },
                     ticks: {
-                        callback: function(valor) {
-                            // Mostra apenas potências "limpas" no eixo: 1k, 10k, 100k...
+                        callback: function (valor) {
                             return valor.toLocaleString('pt-BR');
                         }
-                    },
-                    title: {
-                        display: true,
-                        text: 'Escala logarítmica'
+                    }
+                }
+            }
+        }
+    });
+
+    // --- Gráfico 2: Tempo ---
+    const ctx2 = document.getElementById('graficoTempo').getContext('2d');
+    graficoTempo = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: ['Tempo de Execução'],
+            datasets: [{
+                data: [tempo],
+                backgroundColor: ['#ffc107'],
+                borderRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function (context) {
+                            return ` ${context.raw.toLocaleString('pt-BR')} ns`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: { display: true, text: 'Nanossegundos (ns)' },
+                    ticks: {
+                        callback: function (valor) {
+                            return valor.toLocaleString('pt-BR');
+                        }
                     }
                 }
             }
